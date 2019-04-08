@@ -1,14 +1,8 @@
 from flask import Flask, request, redirect, url_for, Response
-import wtiproj01_client as client
-import json
+import engine.api_logic as client
 
 app = Flask(__name__)
 client = client.RatingsClient()
-# client.__init__(client)
-
-
-# def __init__(self):
-#     client.__init__(client)
 
 
 @app.route('/')
@@ -43,6 +37,7 @@ def get_avg_genre_ratings():
 def get_user_avg_genre_ratings():
     user = request.args.get('user', type=int)
     return Response(client.avg_genre_ratings_user(user), status=201, mimetype='application/json')
+
 
 if __name__  == "__main__":
     app.run()

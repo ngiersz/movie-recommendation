@@ -1,5 +1,6 @@
 import cherrypy
-from wtiproj01_client import RatingsClient
+from engine.api_logic import RatingsClient
+
 
 class RecomendationsApp(object):
 
