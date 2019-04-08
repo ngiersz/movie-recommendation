@@ -78,18 +78,6 @@ class RatingsClient:
         avg_ratings = avg_ratings.sum()
         return avg_ratings.to_json()
 
-    # TODO: move to another file
-    def get_list_of_dict(self, data):
-        list = []
-        data = data.reset_index()
-        for index, row in data.iterrows():
-            list.append(row.to_dict())
-        return list
-
-    # TODO: move to another file
-    def get_df_from_list_of_dict(self, list):
-        return pd.DataFrame.from_dict(list)
-
     def get_avg_ratings_for_genres(self):
         genres = self.get_genres_column_names(self.ratings)
         all_ratings = pd.DataFrame()
