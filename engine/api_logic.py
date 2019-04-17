@@ -56,7 +56,9 @@ class RatingsClient:
             self.db.add(user, self.get_user_profile_unbiased(user).to_json())
 
     def get_profile(self, user_id):
-        return self.db.get_all(user_id)
+        profile = self.get_user_profile_unbiased(user_id).to_json()
+        self.db.add(user_id, profile)
+        return profile
 
     # avgerage ratings:
     def get_avg_ratings_for_genres(self):
@@ -109,7 +111,7 @@ class RatingsClient:
 
     def avg_genre_ratings_user(self, user_id):
         avg_ratings = pd.DataFrame()
-        user_ratings = self.get_ratings()[self.ratings.userID == user_id]
+        user_ratings = self.get_ratings()[self.get_ratings().userID == user_id]
         for col in user_ratings:
             if col.startswith('genre'):
                 try:
