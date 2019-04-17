@@ -25,7 +25,7 @@ class DBClient:
 
     @staticmethod
     def add(name, new_obj):
-        redis.add_to_queue(name, new_obj)
+        redis.add_to_queue(name, json.dumps(new_obj))
 
 
 if __name__ == "__main__":

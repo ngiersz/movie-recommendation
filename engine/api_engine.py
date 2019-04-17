@@ -23,7 +23,7 @@ def delete_rating():
 
 @app.route('/rating', methods=['POST'])
 def add_rating():
-    return Response(client.add_to_ratings(request.data), status=201, mimetype='application/json')
+    return Response(client.add_json_to_ratings(request.data), status=201, mimetype='application/json')
 
 
 @app.route('/avg-genre-ratings/all-users', methods=['GET'])
