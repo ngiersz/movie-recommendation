@@ -17,7 +17,7 @@ def ratings():
 
 @app.route('/ratings', methods=['DELETE'])
 def delete_rating():
-    client.delete_rating()
+    client.delete_all_ratings()
     return '', 204
 
 
@@ -29,7 +29,6 @@ def add_rating():
 @app.route('/avg-genre-ratings/all-users', methods=['GET'])
 def get_avg_genre_ratings():
     return client.avg_genre_ratings()
-    # return Response(client.avg_genre_ratings(), status=201, mimetype='application/json')
 
 
 # request format: /avg-genre-ratings?user=1
