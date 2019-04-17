@@ -1,16 +1,20 @@
 import pandas as pd
 import json
+import engine.db_client as db
 
 
 class RatingsClient:
     ratings = pd.DataFrame()
+    db = db.DBClient()
+    RATINGS_QUEUE = 'ratings'
 
-    def __init__(self):
-        self.ratings = self.create_ratings()
-        self.ratings = self.ratings.reset_index()
-
-        print(self.ratings.head())
-        print('client init')
+    def __init__(self, fill=False):
+        if fill:
+            self.db.flush_queue(self.RATINGS_QUEUE)
+            ratings = self.create_ratings()
+            ratings = ratings.reset_index()
+            # print(ratings)
+            self.db.add_df(self.RATINGS_QUEUE, ratings)
 
     def create_ratings(self):
         return self.create_merged_ratings_and_genres().sum()
@@ -25,9 +29,12 @@ class RatingsClient:
         ratings_multi_hot = ratings_multi_hot.groupby(['userID', 'movieID', 'rating'])
         return ratings_multi_hot
 
+    def get_ratings(self):
+        return self.db.get_all(self.RATINGS_QUEUE)
+
     def get_ratings_and_genres_column_names(self):
-        ratings = self.create_ratings()
-        genres_column_names = self.get_genres_column_names(self, ratings)
+        ratings = self.get_ratings()
+        genres_column_names = self.get_genres_column_names(ratings)
         return ratings, genres_column_names
 
     def get_genres_column_names(self, ratings):
@@ -38,15 +45,26 @@ class RatingsClient:
         return genres_column_names
 
     def delete_all_ratings(self):
-        self.ratings = self.ratings.iloc[0:0]
-        print('after del: ' + str(self.ratings.size))
-        print(self.ratings.head())
+        self.db.flush_queue(self.RATINGS_QUEUE)
 
+    # profiles:
+    def create_all_profiles(self):
+        users = self.get_ratings().userID.unique()
+        for user in users:
+            user = int(user)
+            print(user)
+            self.db.add(user, self.get_user_profile_unbiased(user).to_json())
+
+    def get_profile(self, user_id):
+        return self.db.get_all(user_id)
+
+    # avgerage ratings:
     def get_avg_ratings_for_genres(self):
-        genres = self.get_genres_column_names(self.ratings)
+        ratings = self.get_ratings()
+        genres = self.get_genres_column_names(ratings)
         all_ratings = pd.DataFrame()
         for genre in genres:
-            genre_ratings = self.ratings[self.ratings[genre] == 1]
+            genre_ratings = ratings[ratings[genre] == 1]
             all_ratings = all_ratings.append(
                 pd.Series(genre_ratings.rating.mean(), index=[genre]), ignore_index=True)
         # print('all users:')
@@ -54,8 +72,9 @@ class RatingsClient:
         return all_ratings.sum()
 
     def get_avg_user_ratings_for_genres(self, user_id):
-        genres = self.get_genres_column_names(self.ratings)
-        user_ratings = self.ratings[self.ratings.userID == user_id]
+        ratings = self.get_ratings()
+        genres = self.get_genres_column_names(ratings)
+        user_ratings = ratings[ratings.userID == user_id]
         user_ratings_with_genres = pd.DataFrame()
         for genre in genres:
             genre_ratings = user_ratings[user_ratings[genre] == 1]
@@ -71,31 +90,26 @@ class RatingsClient:
 
     # json
     def get_ratings_json(self):
-        return self.ratings.to_json(orient='index')
+        return self.get_ratings().to_json(orient='index')
 
     def add_json_to_ratings(self, rating):
         rating_series = pd.Series(json.loads(rating))
-        self.ratings = self.ratings
-        # print(self.ratings)
-        # print('before add: ' + str(self.ratings.shape))
-        self.ratings = self.ratings.append(rating_series, ignore_index=True)
-        # self.ratings = self.ratings.append(rating_series[~['userID', 'movieID', 'rating']], ignore_index=True)
-        # print('after add: ' + str(self.ratings.shape))
-        # print(self.ratings)
+        self.db.add(self.RATINGS_QUEUE, json.loads(rating))
         print('added new rating userId=' + str(rating_series['userID']) + ' movieID=' + str(rating_series['movieID']) +
               ' rating=' + str(rating_series['rating']))
 
     def avg_genre_ratings(self):
         avg_ratings = pd.DataFrame()
-        for col in self.ratings:
+        ratings = self.get_ratings()
+        for col in ratings:
             if col.startswith('genre'):
-                genre_avg = self.ratings.groupby(col).rating.mean()[1]
+                genre_avg = ratings.groupby(col).rating.mean()[1]
                 avg_ratings = avg_ratings.append(pd.Series([genre_avg], index=[col]), ignore_index=True)
         return avg_ratings.sum().to_json()
 
     def avg_genre_ratings_user(self, user_id):
         avg_ratings = pd.DataFrame()
-        user_ratings = self.ratings[self.ratings.userID == user_id]
+        user_ratings = self.get_ratings()[self.ratings.userID == user_id]
         for col in user_ratings:
             if col.startswith('genre'):
                 try:
@@ -116,8 +130,11 @@ class RatingsClient:
 
 if __name__ == "__main__":
     # create_ratings_json()
-    cl = RatingsClient()
-    # print(cl.get_ratings_and_genres_column_names()[1])
+    cl = RatingsClient(fill=False)
+    # cl.create_all_profiles()
+    # print(cl.get_profile(75))
+    # cl.delete_all_ratings()
+    # print(cl.get_ratings())
 
     #  zad 4
     # list_of_dict = cl.get_list_of_dict(cl.ratings)
@@ -126,8 +143,9 @@ if __name__ == "__main__":
     # print(cl.ratings.shape)
     # print(data_check.shape)
 
-    # unbiased = cl.get_user_profile_unbiased(75)
-    # print('unbiased:')
-    # print(unbiased)
+    unbiased = cl.get_user_profile_unbiased(75)
+    print('unbiased:')
+    print(unbiased)
 
-    print(cl.get_avg_ratings_for_genres_dict())
+    # print(cl.get_avg_ratings_for_genres_dict())
+
