@@ -55,12 +55,12 @@ class RatingsClient:
             print(user)
             self.db.add(user, self.get_user_profile_unbiased(user).to_json())
 
-    def get_profile(self, user_id):
+    def get_updated_profile(self, user_id):
         profile = self.get_user_profile_unbiased(user_id).to_json()
         self.db.add(user_id, profile)
         return profile
 
-    # avgerage ratings:
+    # average ratings:
     def get_avg_ratings_for_genres(self):
         ratings = self.get_ratings()
         genres = self.get_genres_column_names(ratings)

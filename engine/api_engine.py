@@ -39,5 +39,12 @@ def get_user_avg_genre_ratings():
     return Response(client.avg_genre_ratings_user(user), status=201, mimetype='application/json')
 
 
+# request format: /profile?user=1
+@app.route('/profile', methods=['GET'])
+def get_user_profile():
+    user = request.args.get('user', type=int)
+    return Response(client.get_updated_profile(user), status=201, mimetype='application/json')
+
+
 if __name__  == "__main__":
     app.run()
