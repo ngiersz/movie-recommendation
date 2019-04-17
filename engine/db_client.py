@@ -23,14 +23,18 @@ class DBClient:
         for index, row in df.iterrows():
             redis.add_to_queue(name, json.dumps(row.to_dict()))
 
+    @staticmethod
+    def add(name, new_obj):
+        redis.add_to_queue(name, new_obj)
+
 
 if __name__ == "__main__":
     RATINGS_QUEUE = 'ratings'
     cl = DBClient()
     cl.flush_queue(RATINGS_QUEUE)
-
-    data = pd.read_csv('data/user_ratedmovies.dat', delimiter='\t', nrows=1000)
-    cl.add_df(RATINGS_QUEUE, data)
-    print(cl.get_all(RATINGS_QUEUE).size)
-
-
+    # data = pd.read_csv('data/user_ratedmovies.dat', delimiter='\t', nrows=1000)
+    # cl.add_df(RATINGS_QUEUE, data)
+    new = '{"userID": 75.0, "movieID": 3.0, "rating": 1.0, "date_day": 29.0, "date_month": 10.0, "date_year": 2006.0, "date_hour": 23.0, "date_minute": 17.0, "date_second": 16.0}'
+    cl.add(RATINGS_QUEUE, new)
+    cl.add(RATINGS_QUEUE, new)
+    print(cl.get_all(RATINGS_QUEUE).head())
