@@ -100,7 +100,7 @@ class RatingsClient:
 
     def add_json_to_ratings(self, rating):
         rating_series = pd.Series(json.loads(rating))
-        self.db.add(self.RATINGS_TABLE, json.loads(rating))
+        self.db.add_rating(json.loads(rating))
         print('added new rating userId=' + str(rating_series['userID']) + ' movieID=' + str(rating_series['movieID']) +
               ' rating=' + str(rating_series['rating']))
 

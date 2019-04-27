@@ -33,11 +33,15 @@ class DBClient:
         cass.create_table_ratings(self.session, self.keyspace)
         for index, row in df.iterrows():
             cass.push_rating(self.session, self.keyspace, json.dumps(row.to_dict()))
-            # redis.add_to_queue(name, json.dumps(row.to_dict()))
 
     def add_profile(self, user_id, profile):
         cass.create_table_avg_ratings(self.session, self.keyspace)
         cass.push_avg_ratings(self.session, self.keyspace, user_id, profile)
+
+    def add_rating(self, rating):
+         cass.create_table_ratings(self.session, self.keyspace)
+         cass.push_rating(self.session, self.keyspace, json.dumps(rating))
+
 
 
 if __name__ == "__main__":
