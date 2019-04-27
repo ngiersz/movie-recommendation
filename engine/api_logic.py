@@ -15,7 +15,7 @@ class RatingsClient:
             ratings = self.create_ratings()
             ratings = ratings.reset_index()
             print(ratings.columns)
-            self.db.add_df(self.RATINGS_TABLE, ratings)
+            self.db.add_df_ratings(ratings)
 
     def create_ratings(self):
         return self.create_merged_ratings_and_genres().sum()
@@ -54,11 +54,11 @@ class RatingsClient:
         for user in users:
             user = int(user)
             print(user)
-            self.db.add(user, self.get_user_profile_unbiased(user).to_json())
+            self.db.add_profile(user, self.get_user_profile_unbiased(user).to_json())
 
     def get_updated_profile(self, user_id):
         profile = self.get_user_profile_unbiased(user_id).to_json()
-        self.db.add(user_id, profile)
+        self.db.add_profile(user_id, profile)
         return profile
 
     # average ratings:

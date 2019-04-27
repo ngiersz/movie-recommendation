@@ -29,29 +29,28 @@ class DBClient:
     def delete_table(self, name):
         cass.delete_table(self.session, self.keyspace, name)
 
-    def add_df(self, name, df):
+    def add_df_ratings(self, df):
         cass.create_table_ratings(self.session, self.keyspace)
         for index, row in df.iterrows():
-            cass.push_rating(self.session, self.keyspace, name, json.dumps(row.to_dict()))
+            cass.push_rating(self.session, self.keyspace, json.dumps(row.to_dict()))
             # redis.add_to_queue(name, json.dumps(row.to_dict()))
 
-    def add(self, name, new_obj):
-        cass.create_table_ratings(self.session, self.keyspace)
-        cass.push_rating(self.session, self.keyspace, name, userId=1324, avgMovieRating=1.1)
-        # redis.add_to_queue(name, json.dumps(new_obj))
+    def add_profile(self, user_id, profile):
+        cass.create_table_avg_ratings(self.session, self.keyspace)
+        cass.push_avg_ratings(self.session, self.keyspace, user_id, profile)
 
 
 if __name__ == "__main__":
     RATINGS_QUEUE = 'ratings'
     cl = DBClient()
 
-    # cl.delete_table(RATINGS_QUEUE)
+    cl.delete_table(RATINGS_QUEUE)
     data = pd.read_csv('data/user_ratedmovies.dat', delimiter='\t', nrows=1000)
     # cl.add_df(RATINGS_QUEUE, data)
-    new = '{"userID": 75.0, "movieID": 3.0, "rating": 1.0, "date_day": 29.0, "date_month": 10.0, "date_year": 2006.0, "date_hour": 23.0, "date_minute": 17.0, "date_second": 16.0}'
+
+    # new = '{"userID": 75.0, "movieID": 3.0, "rating": 1.0, "date_day": 29.0, "date_month": 10.0, "date_year": 2006.0, "date_hour": 23.0, "date_minute": 17.0, "date_second": 16.0}'
     # cl.add(RATINGS_QUEUE, new)
-    # cl.add(RATINGS_QUEUE, new)
-    # print(cl.get_all(RATINGS_QUEUE).head())
+
 
     # cl.add('user_avg_rating', new)
-    print(cl.get_all(RATINGS_QUEUE).head())
+    print(cl.get_all(RATINGS_QUEUE))
