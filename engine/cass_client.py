@@ -13,7 +13,7 @@ def create_table_ratings(session, keyspace):
     session.execute("""
     CREATE TABLE IF NOT EXISTS """ + keyspace + """.""" + 'ratings' + """ (
     user_id int ,
-    movieID int , 
+    movie_id int , 
     rating float , 
     date_day int , 
     date_month int , 
@@ -21,7 +21,7 @@ def create_table_ratings(session, keyspace):
     date_hour int , 
     date_minute int , 
     date_second int ,
-    PRIMARY KEY(user_id)
+    PRIMARY KEY(user_id, movie_id)
     )
     """)
 
@@ -41,17 +41,14 @@ def push_data_table(session, keyspace, table, userId, avgMovieRating):
 def push_rating(session, keyspace, table, rating):
     # print(json.dumps(rating.to_dict()))
     rating = json.loads(rating)
-    print(rating)
-    print(rating.get('userID'))
-    print(type(rating))
     session.execute(
         """
-        INSERT INTO """ + keyspace + """.""" + table + """ (user_id, movieID, rating, date_day, date_month, date_year, date_hour, date_minute, date_second)
-    VALUES (%(user_id)s, %(movieID)s, %(rating)s, %(date_day)s, %(date_month)s, %(date_year)s, %(date_hour)s, %(date_minute)s, %(date_second)s)
+        INSERT INTO """ + keyspace + """.""" + table + """ (user_id, movie_id, rating, date_day, date_month, date_year, date_hour, date_minute, date_second)
+    VALUES (%(user_id)s, %(movie_id)s, %(rating)s, %(date_day)s, %(date_month)s, %(date_year)s, %(date_hour)s, %(date_minute)s, %(date_second)s)
     """,
         {
             'user_id': int(rating.get('userID')),
-            'movieID': int(rating.get('movieID')),
+            'movie_id': int(rating.get('movieID')),
             'rating': rating.get('rating'),
             'date_day': int(rating.get('date_day')),
             'date_month': int(rating.get('date_month')),
@@ -61,6 +58,7 @@ def push_rating(session, keyspace, table, rating):
             'date_second': int(rating.get('date_second'))
         }
     )
+    print('Added rating: user_id=' + str(rating.get('userID')) + ' movie_id=' + str(rating.get('movieID')))
 
 
 def get_data_table(session, keyspace, table):
