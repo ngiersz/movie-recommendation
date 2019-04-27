@@ -12,53 +12,71 @@ def create_keyspace(session, keyspace):
 def create_table_ratings(session, keyspace):
     session.execute("""
     CREATE TABLE IF NOT EXISTS """ + keyspace + """.""" + 'ratings' + """ (
-    user_id int ,
-    movie_id int , 
+    "userID" int ,
+    "movieID" int , 
     rating float , 
-    date_day int , 
-    date_month int , 
-    date_year int , 
-    date_hour int , 
-    date_minute int , 
-    date_second int ,
-    PRIMARY KEY(user_id, movie_id)
+    genre_Action int ,
+    genre_Adventure int ,
+    genre_Animation int ,
+    genre_Children int ,
+    genre_Comedy int ,
+    genre_Crime int ,
+    genre_Documentary int ,
+    genre_Drama int ,
+    genre_Fantasy int ,
+    genre_FilmNoir int ,
+    genre_Horror int ,
+    genre_Musical int ,
+    genre_Mystery int ,
+    genre_Romance int ,
+    genre_SciFi int ,
+    genre_Thriller int ,
+    genre_War int ,
+    genre_Western int ,
+    PRIMARY KEY("userID", "movieID")
     )
     """)
-
-
-def push_data_table(session, keyspace, table, userId, avgMovieRating):
-    session.execute(
-        """
-        INSERT INTO """ + keyspace + """.""" + table + """ (user_id, avg_movie_rating)
-    VALUES (%(user_id)s, %(avg_movie_rating)s)
-    """,
-        {
-            'user_id': userId,
-            'avg_movie_rating': avgMovieRating
-        }
-    )
 
 def push_rating(session, keyspace, table, rating):
     # print(json.dumps(rating.to_dict()))
     rating = json.loads(rating)
     session.execute(
         """
-        INSERT INTO """ + keyspace + """.""" + table + """ (user_id, movie_id, rating, date_day, date_month, date_year, date_hour, date_minute, date_second)
-    VALUES (%(user_id)s, %(movie_id)s, %(rating)s, %(date_day)s, %(date_month)s, %(date_year)s, %(date_hour)s, %(date_minute)s, %(date_second)s)
+        INSERT INTO """ + keyspace + """.""" + table + """ ("userID", "movieID", rating, genre_Action, genre_Adventure, 
+        genre_Animation, genre_Children , genre_Comedy, genre_Crime, genre_Documentary, genre_Drama, genre_Fantasy,
+        genre_FilmNoir, genre_Horror, genre_Musical, genre_Mystery, genre_Romance, genre_SciFi, genre_Thriller,
+        genre_War, genre_Western )
+    VALUES (%(userID)s, %(movieID)s, %(rating)s, %(genre_Action)s, %(genre_Adventure)s, %(genre_Animation)s, 
+    %(genre_Children)s, %(genre_Comedy)s, %(genre_Crime)s, %(genre_Documentary)s, %(genre_Drama)s, %(genre_Fantasy)s, 
+    %(genre_FilmNoir)s, %(genre_Horror)s, %(genre_Musical)s, %(genre_Mystery)s, %(genre_Romance)s, %(genre_SciFi)s, 
+    %(genre_Thriller)s, %(genre_War)s, %(genre_Western)s
+    )
     """,
         {
-            'user_id': int(rating.get('userID')),
-            'movie_id': int(rating.get('movieID')),
+            'userID': int(rating.get('userID')),
+            'movieID': int(rating.get('movieID')),
             'rating': rating.get('rating'),
-            'date_day': int(rating.get('date_day')),
-            'date_month': int(rating.get('date_month')),
-            'date_year': int(rating.get('date_year')),
-            'date_hour': int(rating.get('date_hour')),
-            'date_minute': int(rating.get('date_minute')),
-            'date_second': int(rating.get('date_second'))
+            'genre_Action': int(rating.get('genre_Action')),
+            'genre_Adventure': int(rating.get('genre_Adventure')),
+            'genre_Animation': int(rating.get('genre_Animation')),
+            'genre_Children': int(rating.get('genre_Children')),
+            'genre_Comedy': int(rating.get('genre_Comedy')),
+            'genre_Crime': int(rating.get('genre_Crime')),
+            'genre_Documentary': int(rating.get('genre_Documentary')),
+            'genre_Drama': int(rating.get('genre_Drama')),
+            'genre_Fantasy': int(rating.get('genre_Fantasy')),
+            'genre_FilmNoir': int(rating.get('genre_Film-Noir')),
+            'genre_Horror': int(rating.get('genre_Horror')),
+            'genre_Musical': int(rating.get('genre_Musical')),
+            'genre_Mystery': int(rating.get('genre_Mystery')),
+            'genre_Romance': int(rating.get('genre_Romance')),
+            'genre_SciFi': int(rating.get('genre_Sci-Fi')),
+            'genre_Thriller': int(rating.get('genre_Thriller')),
+            'genre_War': int(rating.get('genre_War')),
+            'genre_Western': int(rating.get('genre_Western'))
         }
     )
-    print('Added rating: user_id=' + str(rating.get('userID')) + ' movie_id=' + str(rating.get('movieID')))
+    print('Added rating: userID=' + str(rating.get('userID')) + ' movieID=' + str(rating.get('movieID')))
 
 
 def get_data_table(session, keyspace, table):
@@ -70,7 +88,7 @@ def clear_table(session, keyspace, table):
 
 
 def delete_table(session, keyspace, table):
-    session.execute("DROP TABLE " + keyspace + "." + table + ";")
+    session.execute("DROP TABLE IF EXISTS " + keyspace + "." + table + ";")
 
 
 if __name__ == "__main__":

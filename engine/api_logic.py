@@ -6,15 +6,16 @@ import engine.db_client as db
 class RatingsClient:
     ratings = pd.DataFrame()
     db = db.DBClient()
-    RATINGS_QUEUE = 'ratings'
+    RATINGS_TABLE = 'ratings'
 
-    def __init__(self, fill=False):
+    def __init__(self, fill=True):
         if fill:
-            self.db.flush_queue(self.RATINGS_QUEUE)
+            # self.db.flush_queue(self.RATINGS_QUEUE)
+            self.db.delete_table(self.RATINGS_TABLE)
             ratings = self.create_ratings()
             ratings = ratings.reset_index()
-            # print(ratings)
-            self.db.add_df(self.RATINGS_QUEUE, ratings)
+            print(ratings.columns)
+            self.db.add_df(self.RATINGS_TABLE, ratings)
 
     def create_ratings(self):
         return self.create_merged_ratings_and_genres().sum()
@@ -30,7 +31,7 @@ class RatingsClient:
         return ratings_multi_hot
 
     def get_ratings(self):
-        return self.db.get_all(self.RATINGS_QUEUE)
+        return self.db.get_all(self.RATINGS_TABLE)
 
     def get_ratings_and_genres_column_names(self):
         ratings = self.get_ratings()
@@ -45,7 +46,7 @@ class RatingsClient:
         return genres_column_names
 
     def delete_all_ratings(self):
-        self.db.flush_queue(self.RATINGS_QUEUE)
+        self.db.flush_queue(self.RATINGS_TABLE)
 
     # profiles:
     def create_all_profiles(self):
@@ -99,7 +100,7 @@ class RatingsClient:
 
     def add_json_to_ratings(self, rating):
         rating_series = pd.Series(json.loads(rating))
-        self.db.add(self.RATINGS_QUEUE, json.loads(rating))
+        self.db.add(self.RATINGS_TABLE, json.loads(rating))
         print('added new rating userId=' + str(rating_series['userID']) + ' movieID=' + str(rating_series['movieID']) +
               ' rating=' + str(rating_series['rating']))
 
