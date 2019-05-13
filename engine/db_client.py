@@ -4,7 +4,7 @@ import json
 from cassandra.cluster import Cluster
 import engine.cass_client as cass
 from cassandra.query import dict_factory
-
+import numpy as np
 
 class DBClient:
 
@@ -30,6 +30,12 @@ class DBClient:
         cass.delete_table(self.session, self.keyspace, name)
 
     def add_df_ratings(self, df):
+        # print(df.columns.values)
+        # index_userID = np.argwhere(df.columns.values=='userID')
+        # index_movieID = np.argwhere(df.columns.values=='movieID')
+        # additional_columns = np.delete(df.columns.values, [index_userID, index_movieID])
+        # print(additional_columns)
+        # cass.create_table_ratings(self.session, self.keyspace, '"userID", "movieID"', additional_columns)
         cass.create_table_ratings(self.session, self.keyspace)
         for index, row in df.iterrows():
             cass.push_rating(self.session, self.keyspace, json.dumps(row.to_dict()))

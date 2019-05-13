@@ -12,12 +12,14 @@ def create_keyspace(session, keyspace):
     """)
 
 
+# def create_table_ratings(session, keyspace, primaryKey, additionalColumns):
 def create_table_ratings(session, keyspace):
+    create_keyspace(session, keyspace)
     session.execute("""
     CREATE TABLE IF NOT EXISTS """ + keyspace + """.""" + RATINGS_TABLE + """ (
     "userID" int ,
-    "movieID" int , 
-    rating float , 
+    "movieID" int ,
+    rating float ,
     genre_Action int ,
     genre_Adventure int ,
     genre_Animation int ,
@@ -39,6 +41,14 @@ def create_table_ratings(session, keyspace):
     PRIMARY KEY("userID", "movieID")
     )
     """)
+
+    # query = """CREATE TABLE IF NOT EXISTS """ + keyspace + """.""" + RATINGS_TABLE + """ + ("""
+    # for column_name, vtype in additionalColumns.items():
+    #     query = query + str(column_name) + ' ' + str(vtype) + ','
+    # query = query + 'PRIMARY KEY(' + primaryKey + ')'
+    # query = query + """ )"""
+    # session.execute(query)
+
 
 def create_table_avg_ratings(session, keyspace):
     session.execute("""
