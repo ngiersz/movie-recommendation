@@ -28,7 +28,7 @@ def add_rating():
 
 @app.route('/avg-genre-ratings/all-users', methods=['GET'])
 def get_avg_genre_ratings():
-    return client.avg_genre_ratings()
+    return client.get_avg_ratings_for_genres().to_json()
 
 
 # request format: /avg-genre-ratings?user=1

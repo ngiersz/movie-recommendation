@@ -103,15 +103,15 @@ class RatingsClient:
         self.db.add_rating(json.loads(rating))
         print('added new rating userId=' + str(rating_series['userID']) + ' movieID=' + str(rating_series['movieID']) +
               ' rating=' + str(rating_series['rating']))
-
-    def avg_genre_ratings(self):
-        avg_ratings = pd.DataFrame()
-        ratings = self.get_ratings()
-        for col in ratings:
-            if col.startswith('genre'):
-                genre_avg = ratings.groupby(col).rating.mean()[1]
-                avg_ratings = avg_ratings.append(pd.Series([genre_avg], index=[col]), ignore_index=True)
-        return avg_ratings.sum().to_json()
+    #
+    # def avg_genre_ratings(self):
+    #     avg_ratings = pd.DataFrame()
+    #     ratings = self.get_ratings()
+    #     for col in ratings:
+    #         if col.startswith('genre'):
+    #             genre_avg = ratings.groupby(col).rating.mean()[1]
+    #             avg_ratings = avg_ratings.append(pd.Series([genre_avg], index=[col]), ignore_index=True)
+    #     return avg_ratings.sum().to_json()
 
     def avg_genre_ratings_user(self, user_id):
         avg_ratings = pd.DataFrame()
