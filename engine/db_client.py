@@ -4,7 +4,6 @@ import json
 from cassandra.cluster import Cluster
 import engine.cass_client as cass
 from cassandra.query import dict_factory
-import numpy as np
 
 class DBClient:
 

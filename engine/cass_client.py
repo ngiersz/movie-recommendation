@@ -115,12 +115,12 @@ def push_rating(session, keyspace, rating):
             'genre_Western': int(rating.get('genre_Western'))
         }
     )
-    print('Added rating: userID=' + str(rating.get('userID')) + ' movieID=' + str(rating.get('movieID')))
+    # print('Added rating: userID=' + str(rating.get('userID')) + ' movieID=' + str(rating.get('movieID')))
 
 
 def push_avg_ratings(session, keyspace, user_id, rating):
     rating = json.loads(rating)
-    print(rating)
+    # print(rating)
     session.execute(
         """
         INSERT INTO """ + keyspace + """.""" + AVG_RATINGS_TABLE + """ ("userID", genre_Action, genre_Adventure, 
@@ -155,7 +155,7 @@ def push_avg_ratings(session, keyspace, user_id, rating):
             'genre_Western': float(rating.get('genre_western'))
         }
     )
-    print('Added average ratings: userID=' + str(user_id))
+    # print('Added average ratings: userID=' + str(user_id))
 
 
 def get_data_table(session, keyspace, table):
@@ -172,7 +172,7 @@ def delete_table(session, keyspace, table):
 
 if __name__ == "__main__":
     keyspace = "user_ratings"
-    table = "user_avg_rating"
+    # table = "user_avg_rating"
 
     cluster = Cluster(['127.0.0.1'], port=9042)
     session = cluster.connect()
@@ -186,6 +186,7 @@ if __name__ == "__main__":
     # znanych z języka Python przy zapytaniach do bazy danych
     session.row_factory = dict_factory
 
+    # create_table_avg_ratings(session, keyspace)
     print(get_data_table(session, keyspace, AVG_RATINGS_TABLE).current_rows)
 
     # clear_table(session, keyspace, table)

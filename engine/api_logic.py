@@ -101,8 +101,8 @@ class RatingsClient:
     def add_json_to_ratings(self, rating):
         rating_series = pd.Series(json.loads(rating))
         self.db.add_rating(json.loads(rating))
-        print('added new rating userId=' + str(rating_series['userID']) + ' movieID=' + str(rating_series['movieID']) +
-              ' rating=' + str(rating_series['rating']))
+        # print('added new rating userId=' + str(rating_series['userID']) + ' movieID=' + str(rating_series['movieID']) +
+        #       ' rating=' + str(rating_series['rating']))
     #
     # def avg_genre_ratings(self):
     #     avg_ratings = pd.DataFrame()
@@ -137,7 +137,7 @@ class RatingsClient:
 if __name__ == "__main__":
     # create_ratings_json()
     cl = RatingsClient(fill=False)
-    cl.delete_all_ratings()
+    # cl.delete_all_ratings()
     # cl.create_all_profiles()
     # print(cl.get_profile(75))
     # cl.delete_all_ratings()
