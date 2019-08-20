@@ -1,8 +1,10 @@
-from flask import Flask, request, redirect, url_for, Response
+from flask import Flask, request, Response, jsonify, abort
 import engine.api_logic as client
+from engine.elasticsearch_client import ElasticClient
 
 app = Flask(__name__)
 client = client.RatingsClient()
+es = ElasticClient()
 
 
 @app.route('/')
